@@ -155,33 +155,34 @@ ORDER BY num_cause DESC;
 
 /* 1) Create New Variable for Agencies (ALL fires by organization, ordered by year and state) */
 SELECT FIRE_YEAR as year, NWCG_REPORTING_AGENCY as reporting_agency, STATE as state,
-CASE WHEN NWCG_REPORTING_AGENCY = 'FWS' THEN 'Wildlife Organization'
-WHEN NWCG_REPORTING_AGENCY = 'DOD' OR 
-         NWCG_REPORTING_AGENCY = 'DOE' OR
- NWCG_REPORTING_AGENCY = 'BOR' THEN 'Government Department'
-WHEN NWCG_REPORTING_AGENCY = 'ST/C&L' OR
-                 NWCG_REPORTING_AGENCY = 'IA' THEN 'Local Government Department'
-WHEN NWCG_REPORTING_AGENCY = 'BIA' OR
-                 NWCG_REPORTING_AGENCY = 'TRIBE' THEN 'Tribal Organization'
-ELSE 'Forest/Park Service'
-END as organization
-FROM `Fires`
+    FROM (SELECT FIRE_YEAR as year, NWCG_REPORTING_AGENCY as reporting_agency, STATE as state,
+                 CASE WHEN NWCG_REPORTING_AGENCY = 'FWS' THEN 'Wildlife Organization'
+                      WHEN NWCG_REPORTING_AGENCY = 'DOD' OR 
+                           NWCG_REPORTING_AGENCY = 'DOE' OR
+                           NWCG_REPORTING_AGENCY = 'BOR' THEN 'Government Department'
+                      WHEN NWCG_REPORTING_AGENCY = 'ST/C&L' OR
+                           NWCG_REPORTING_AGENCY = 'IA' THEN 'Local Government Department'
+                      WHEN NWCG_REPORTING_AGENCY = 'BIA' OR
+                           NWCG_REPORTING_AGENCY = 'TRIBE' THEN 'Tribal Organization'
+                      ELSE 'Forest/Park Service'
+                 END as organization
+            FROM `Fires`)
 ORDER BY FIRE_YEAR,STATE;
 
 
 /* 2) Number of Fires Attended By Each Organization per Year Per State */
 SELECT organization, COUNT(organization) as freq_orgs, year, state
-FROM (SELECT FIRE_YEAR as year, NWCG_REPORTING_AGENCY as reporting_agency, STATE as state,
-CASE WHEN NWCG_REPORTING_AGENCY = 'FWS' THEN 'Wildlife Organization'
-WHEN NWCG_REPORTING_AGENCY = 'DOD' OR 
-         NWCG_REPORTING_AGENCY = 'DOE' OR
- NWCG_REPORTING_AGENCY = 'BOR' THEN 'Government Department'
-WHEN NWCG_REPORTING_AGENCY = 'ST/C&L' OR
-                 NWCG_REPORTING_AGENCY = 'IA' THEN 'Local Government Department'
-WHEN NWCG_REPORTING_AGENCY = 'BIA' OR
-                 NWCG_REPORTING_AGENCY = 'TRIBE' THEN 'Tribal Organization'
-ELSE 'Forest/Park Service'
-END as organization
-FROM `Fires`)
+    FROM (SELECT FIRE_YEAR as year, NWCG_REPORTING_AGENCY as reporting_agency, STATE as state,
+                 CASE WHEN NWCG_REPORTING_AGENCY = 'FWS' THEN 'Wildlife Organization'
+                      WHEN NWCG_REPORTING_AGENCY = 'DOD' OR 
+                           NWCG_REPORTING_AGENCY = 'DOE' OR
+                           NWCG_REPORTING_AGENCY = 'BOR' THEN 'Government Department'
+                      WHEN NWCG_REPORTING_AGENCY = 'ST/C&L' OR
+                           NWCG_REPORTING_AGENCY = 'IA' THEN 'Local Government Department'
+                      WHEN NWCG_REPORTING_AGENCY = 'BIA' OR
+                           NWCG_REPORTING_AGENCY = 'TRIBE' THEN 'Tribal Organization'
+                      ELSE 'Forest/Park Service'
+                 END as organization
+            FROM `Fires`)
 GROUP BY year,state
 ORDER BY state,organization;
